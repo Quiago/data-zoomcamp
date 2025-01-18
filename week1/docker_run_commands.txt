@@ -1,0 +1,53 @@
+#Command to create the network in docker
+docker create network name_of_your_network
+
+#Commad to start your postgres database container
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name pg-database \
+    postgres:13
+
+#Commad to start your postgres database container   
+docker run -it \
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+    -e PGADMIN_DEFAULT_PASSWORD="root" \
+    -p 8080:80 \
+    --network=pg-network \
+    --name pgadmin \
+    dpage/pgadmin4
+
+#Commad to run the python script locally and test it
+#If you are using the port 5432 in your local try with other port
+
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+
+python ingestion.py \
+    --user=root \
+    --password=root \
+    --host=localhost \
+    --port=5432 \
+    --database=ny_taxi \
+    --url=${URL}
+    --table_name=yellow_taxi_trips
+
+
+#Commad to build your docker image
+docker build -t taxi_ingest:v001 .
+
+#Commad to start your docker image and the ingestion process
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+docker run -it \
+    --network=pg-network \
+    taxi_ingest:v001 \
+      --user=root \
+      --password=root \
+      --host=pg-database \
+      --port=5432 \
+      --database=ny_taxi \
+      --url=${URL} \
+      --table-name=yellow_taxi_trips
