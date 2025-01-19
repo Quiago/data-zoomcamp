@@ -18,11 +18,13 @@ def main(params):
 
     csv_name = 'output.csv'
     gzip_name = 'output.gz'
-    os.system(f"wget {url} -O {gzip_name}")
-
-    with gzip.open('output.gz', 'rb') as f_in:
-        with open(csv_name, 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    if url.endswith('.csv'):
+        os.system(f"wget {url} -O {csv_name}")
+    if url.endswith('.gz'):
+        os.system(f"wget {url} -O {gzip_name}")
+        with gzip.open(gzip_name, 'rb') as f_in:
+            with open(csv_name, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
 
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
     engine.connect()
@@ -31,8 +33,9 @@ def main(params):
     df_iter = pd.read_csv(csv_name, iterator=True, chunksize=100000)
     df = next(df_iter)
 
-    df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-    df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+    if 'tpep_pickup_datetime' in df.columns:
+        df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+        df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
     df.to_sql(name=table_name, con=engine, if_exists='append')
@@ -41,8 +44,9 @@ def main(params):
     while True:
         t_start = time()
         df = next(df_iter)
-        df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-        df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+        if 'tpep_pickup_datetime' in df.columns:
+            df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+            df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
         df.to_sql(name=table_name, con=engine, if_exists='append')
         t_end = time()
@@ -53,7 +57,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="IngestCSV data into the postgres database")
 
     parser.add_argument('--host', type=str, help='Host of the database', default='localhost')
-    parser.add_argument('--port', type=int, help='Port of the database', default=5432)
+    parser.add_argument('--port', type=int, help='Port of the database', default=5000)
     parser.add_argument('--user', type=str, help='User of the database', default='root')
     parser.add_argument('--password', type=str, help='Password of the database', default='root')
     parser.add_argument('--database', type=str, help='Database name', default='ny_taxi')

@@ -43,11 +43,25 @@ docker build -t taxi_ingest:v001 .
 URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 docker run -it \
     --network=pg-network \
-    taxi_ingest:v001 \
+    taxi_ingest:v002 \
       --user=root \
       --password=root \
-      --host=pg-database \
+      --host=pgdatabase \
       --port=5432 \
       --database=ny_taxi \
       --url=${URL} \
       --table-name=yellow_taxi_trips
+
+#Update the docker image taxi_ingest because we update the ingestion.py to be able to download cvs or gz files
+docker build -t taxi_ingest:v002
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
+docker run -it \
+    --network=pg-network \
+    taxi_ingest:v002 \
+      --user=root \
+      --password=root \
+      --host=pgdatabase \
+      --port=5432 \
+      --database=ny_taxi \
+      --url=${URL} \
+      --table-name=zones
