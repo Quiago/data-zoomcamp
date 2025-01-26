@@ -20,9 +20,12 @@ You can find more details about the bootcamp [here](https://github.com/DataTalks
 
 Each folder in this repository corresponds to a specific week or topic from the bootcamp. Below is the current progress:
 
-### Week 1: **Docker Essentials** 🐳
-This week focuses on using Docker to create, manage, and deploy containerized environments for data engineering projects.  
-You can explore my work for this week in the [Week 1 folder](https://github.com/Quiago/data-zoomcamp/tree/main/week1).
+### Week 1: **Docker & Terraform Fundamentals** 🐳☁️
+This week covers two essential tools:
+- Docker for containerization and environment management
+- Terraform basics for Google Cloud infrastructure deployment
+
+Explore my implementations in the [Week 1 folder](https://github.com/Quiago/data-zoomcamp/tree/main/week1).
 
 ---
 
