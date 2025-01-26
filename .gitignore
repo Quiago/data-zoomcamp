@@ -1,6 +1,6 @@
 **/week1/keys
 **/week1/ny_taxi_postgres_data
 **/week1/.terraform
-**/week1/.terraform.lock.hcl
-**/week1/terraform.tfstate
-**/week1/terraform.tfstate.backup
+*.hcl
+*.tfstate
+*.backup
