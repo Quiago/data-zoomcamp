@@ -3,4 +3,4 @@
 **/week1/.terraform
 *.hcl
 *.tfstate
-*.backup
+*.tfstate.*
