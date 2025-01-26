@@ -1,5 +1,5 @@
 #Command to create the network in docker
-docker create network name_of_your_network
+docker network create name_of_your_network
 
 #Commad to start your postgres database container
 docker run -it \
@@ -65,3 +65,16 @@ docker run -it \
       --database=ny_taxi \
       --url=${URL} \
       --table-name=zones
+
+Homework Commands:
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-10.csv.gz"
+docker run -it \
+    --network=pg-network \
+    taxi_ingest:v002 \
+      --user=root \
+      --password=root \
+      --host=pgdatabase \
+      --port=5432 \
+      --database=ny_taxi \
+      --url=${URL} \
+      --table-name=green_taxi_trips
