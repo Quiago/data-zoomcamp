@@ -4,4 +4,3 @@
 *.hcl
 *.tfstate
 *.tfstate.*
-*.yaml
