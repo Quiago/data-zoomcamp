@@ -4,4 +4,4 @@
 *.hcl
 *.tfstate
 *.tfstate.*
-04_gcp_kv.yaml
+*.yaml
