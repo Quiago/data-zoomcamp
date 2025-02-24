@@ -48,7 +48,12 @@ select trips_unioned.tripid,
     trips_unioned.improvement_surcharge, 
     trips_unioned.total_amount, 
     trips_unioned.payment_type, 
-    trips_unioned.payment_type_description
+    trips_unioned.payment_type_description,
+    {{ dbt_date.date_part('year', 'trips_unioned.pickup_datetime') }} as year,
+    {{ dbt_date.date_part('quarter','trips_unioned.pickup_datetime') }} as quarter,
+    concat({{ dbt_date.date_part('year', 'trips_unioned.pickup_datetime') }}, '-Q', {{ dbt_date.date_part('quarter','trips_unioned.pickup_datetime') }}) as year_quarter,
+    {{ dbt_date.date_part('month','trips_unioned.pickup_datetime') }} as month,
+    {{ dbt_date.month_name('trips_unioned.pickup_datetime') }} as month_name
 from trips_unioned
 inner join dim_zones as pickup_zone
 on trips_unioned.pickup_locationid = pickup_zone.locationid
