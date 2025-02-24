@@ -8,6 +8,7 @@ from trips_data
 group by year, quarter
 order by year, quarter
 )
+
 SELECT
     year,
     quarter,
@@ -23,4 +24,4 @@ FROM
     quarterly_revenue
 ORDER BY
     year,
-    quarter;
+    quarter
