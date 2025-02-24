@@ -6,14 +6,14 @@ with
         select
             sum(total_amount) as revenue,
             lag(sum(total_amount)) over (
-                partition by quarter order by year
+                partition by service_type, quarter order by year
             ) as previous_quarter_year,
             year,
             quarter,
             service_type
         from trips_data
         group by year, quarter, service_type
-    )
+    )service_type
 
 select year, quarter, service_type, revenue as quarter_revenue, previous_quarter_year,
 case 
