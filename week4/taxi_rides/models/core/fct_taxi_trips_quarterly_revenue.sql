@@ -13,15 +13,15 @@ SELECT
     year,
     quarter,
     quarterly_revenue,
-    LAG(quarterly_revenue) OVER (PARTITION BY quarter ORDER BY year) AS previous_year_revenue,
+    previous_year_revenue,
     CASE
-        WHEN LAG(quarterly_revenue) OVER (PARTITION BY quarter ORDER BY year) IS NULL THEN NULL
+        WHEN previous_year_revenue IS NULL THEN NULL
         ELSE
-            (quarterly_revenue - LAG(quarterly_revenue) OVER (PARTITION BY quarter ORDER BY year)) /
-            LAG(quarterly_revenue) OVER (PARTITION BY quarter ORDER BY year) * 100
+            (CAST(quarterly_revenue AS NUMERIC) - CAST(previous_year_revenue AS NUMERIC)) /
+            CAST(previous_year_revenue AS NUMERIC) * 100
     END AS yoy_growth_percentage
 FROM
     quarterly_revenue
 ORDER BY
     year,
-    quarter
+    quarter;
