@@ -1,27 +1,27 @@
-{{ config(materialized='table') }}
+{{ config(materialized="table") }}
 
-with trips_data as (
-    select * from {{ ref('fact_trips') }}
-), quarterly_revenue as (
-select sum(fare_amount) as revenue, year, quarter
-from trips_data
-group by year, quarter
-)
+with
+    trips_data as (select * from {{ ref("fact_trips") }}),
+    quarterly_revenue as (
+        select
+            sum(total_amount) as revenue,
+            lag(sum(total_amount)) over (
+                partition by quarter order by year
+            ) as previous_quarter_year,
+            year,
+            quarter,
+            service_type
+        from trips_data
+        group by year, quarter, service_type
+    )
 
-SELECT
-    year,
-    quarter,
-    revenue,
-    LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) AS previous_year_revenue,
-    CASE
-    WHEN LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) IS NULL THEN NULL
-    WHEN LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) = 0 THEN NULL
-    ELSE
-        (revenue - LAG(revenue) OVER (PARTITION BY quarter ORDER BY year)) /
-        LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) * 100
-    END AS yoy_growth_percentage
-FROM
-    quarterly_revenue
-ORDER BY
-    year,
-    quarter
+select year, quarter, service_type, revenue as quarter_revenue, previous_quarter_year,
+case 
+    when previous_quarter_year is null then null
+    when previous_quarter_year = 0 then null
+    else (revenue - previous_quarter_year) / previous_quarter_year * 100
+
+end as revenue_growth
+
+from quarterly_revenue
+order by year, quarter
