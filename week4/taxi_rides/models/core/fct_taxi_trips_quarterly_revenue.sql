@@ -1,19 +1,22 @@
 {{ config(materialized='table') }}
 
-with trips_data as (
-    select * from {{ ref('fact_trips') }}
-), quarterly_revenue as (
-select sum(fare_amount) as quarterly_revenue, year, quarter
-from trips_data
-group by year, quarter
-order by year, quarter
+WITH trips_data AS (
+    SELECT * FROM {{ ref('fact_trips') }}
+), 
+quarterly_revenue AS (
+    SELECT 
+        EXTRACT(YEAR FROM pickup_datetime) AS year,
+        EXTRACT(QUARTER FROM pickup_datetime) AS quarter,
+        SUM(fare_amount) AS quarterly_revenue
+    FROM trips_data
+    GROUP BY year, quarter
 )
 
 SELECT
     year,
     quarter,
     quarterly_revenue,
-    previous_year_revenue,
+    LAG(quarterly_revenue) OVER (PARTITION BY quarter ORDER BY year) AS previous_year_revenue,
     CASE
         WHEN previous_year_revenue IS NULL THEN NULL
         ELSE
@@ -24,4 +27,4 @@ FROM
     quarterly_revenue
 ORDER BY
     year,
-    quarter;
+    quarter
