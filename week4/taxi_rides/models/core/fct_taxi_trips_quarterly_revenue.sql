@@ -13,7 +13,7 @@ with
             service_type
         from trips_data
         group by year, quarter, service_type
-    )service_type
+    )
 
 select year, quarter, service_type, revenue as quarter_revenue, previous_quarter_year,
 case 
