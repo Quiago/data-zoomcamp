@@ -6,7 +6,6 @@ with trips_data as (
 select sum(fare_amount) as revenue, year, quarter
 from trips_data
 group by year, quarter
-order by year, quarter
 )
 
 SELECT
@@ -16,6 +15,7 @@ SELECT
     LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) AS previous_year_revenue,
     CASE
     WHEN LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) IS NULL THEN NULL
+    WHEN LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) = 0 THEN NULL
     ELSE
         (revenue - LAG(revenue) OVER (PARTITION BY quarter ORDER BY year)) /
         LAG(revenue) OVER (PARTITION BY quarter ORDER BY year) * 100
