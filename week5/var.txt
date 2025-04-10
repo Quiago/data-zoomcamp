@@ -1,0 +1,2 @@
+export SPARK_HOME="${HOME}/spark/spark-3.5.5-bin-hadoop3"
+export PATH="${SPARK_HOME}/bin:${PATH}"
